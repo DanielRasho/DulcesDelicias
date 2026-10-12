@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Raw materials. UI: Inventory > Products > Products (filter: Materias Primas)
+
+    Key product fields:
+      is_storable     True = Odoo tracks the quantity on hand
+      uom_id          unit used to COUNT the stock (kg, L, Units)
+      uom_po_id       unit used to BUY it (e.g. 50 kg sacks, dozens of eggs)
+      standard_price  current cost per stock unit
+      route_ids       how to replenish it: "Buy" = with a purchase order
+      seller_ids      vendor, price (per purchase unit) and lead time in days
+
+    Reordering rules (min / max): when the FORECAST quantity drops below the
+    minimum, Odoo proposes to buy enough to get back to the maximum.
+    UI: Inventory > Operations > Procurement > Replenishment
+    qty_multiple rounds the proposal (e.g. multiples of 50 kg = whole sacks).
+-->
+<odoo>
+    <!-- ===================== CARAMELOS ===================== -->
+    <record id="raw_sugar" model="product.product">
+        <field name="name">Azúcar</field>
+        <field name="default_code">MP-001</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_kgm"/>
+        <field name="uom_po_id" ref="uom_sack_50kg"/>
+        <field name="standard_price">1.00</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_insumos'), 'price': 50.00, 'delay': 2})]"/>
+        <field name="description_purchase">Azúcar refinada, saco de 50 kg.</field>
+    </record>
+
+    <record id="raw_coloring" model="product.product">
+        <field name="name">Colorantes alimentarios</field>
+        <field name="default_code">MP-002</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_litre"/>
+        <field name="uom_po_id" ref="uom.product_uom_litre"/>
+        <field name="standard_price">15.00</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_aromas'), 'price': 15.00, 'delay': 5})]"/>
+    </record>
+
+    <record id="raw_flavoring" model="product.product">
+        <field name="name">Saborizantes</field>
+        <field name="default_code">MP-003</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_litre"/>
+        <field name="uom_po_id" ref="uom.product_uom_litre"/>
+        <field name="standard_price">20.00</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_aromas'), 'price': 20.00, 'delay': 5})]"/>
+    </record>
+
+    <!-- ===================== CHOCOLATES ===================== -->
+    <record id="raw_cocoa" model="product.product">
+        <field name="name">Cacao</field>
+        <field name="default_code">MP-004</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_kgm"/>
+        <field name="uom_po_id" ref="uom.product_uom_kgm"/>
+        <field name="standard_price">8.00</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_insumos'), 'price': 8.00, 'delay': 7})]"/>
+    </record>
+
+    <record id="raw_milk" model="product.product">
+        <field name="name">Leche</field>
+        <field name="default_code">MP-005</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_litre"/>
+        <field name="uom_po_id" ref="uom.product_uom_litre"/>
+        <field name="standard_price">1.20</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_lacteos'), 'price': 1.20, 'delay': 1})]"/>
+    </record>
+
+    <!-- ===================== GALLETAS ===================== -->
+    <record id="raw_flour" model="product.product">
+        <field name="name">Harina de trigo</field>
+        <field name="default_code">MP-006</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_kgm"/>
+        <field name="uom_po_id" ref="uom_sack_50kg"/>
+        <field name="standard_price">0.90</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_insumos'), 'price': 45.00, 'delay': 3})]"/>
+        <field name="description_purchase">Harina de trigo todo uso, saco de 50 kg.</field>
+    </record>
+
+    <record id="raw_butter" model="product.product">
+        <field name="name">Mantequilla</field>
+        <field name="default_code">MP-007</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_kgm"/>
+        <field name="uom_po_id" ref="uom.product_uom_kgm"/>
+        <field name="standard_price">7.00</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_lacteos'), 'price': 7.00, 'delay': 1})]"/>
+    </record>
+
+    <record id="raw_eggs" model="product.product">
+        <field name="name">Huevos</field>
+        <field name="default_code">MP-008</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_dozen"/>
+        <field name="standard_price">0.15</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="route_ids" eval="[Command.link(ref('purchase_stock.route_warehouse0_buy'))]"/>
+        <field name="seller_ids" eval="[Command.create({'partner_id': ref('vendor_lacteos'), 'price': 1.80, 'delay': 1})]"/>
+        <field name="description_purchase">Huevos frescos, se compran por docena.</field>
+    </record>
+
+    <!-- ============ REORDERING RULES (stock mínimo y máximo) ============
+         Quantities are in the STOCK unit of each product (kg, L, Units). -->
+    <record id="orderpoint_sugar" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_sugar"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">100</field>
+        <field name="product_max_qty">400</field>
+        <field name="qty_multiple">50</field>
+    </record>
+    <record id="orderpoint_coloring" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_coloring"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">2</field>
+        <field name="product_max_qty">10</field>
+        <field name="qty_multiple">1</field>
+    </record>
+    <record id="orderpoint_flavoring" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_flavoring"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">3</field>
+        <field name="product_max_qty">15</field>
+        <field name="qty_multiple">1</field>
+    </record>
+    <record id="orderpoint_cocoa" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_cocoa"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">20</field>
+        <field name="product_max_qty">80</field>
+        <field name="qty_multiple">5</field>
+    </record>
+    <record id="orderpoint_milk" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_milk"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">20</field>
+        <field name="product_max_qty">60</field>
+        <field name="qty_multiple">1</field>
+    </record>
+    <record id="orderpoint_flour" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_flour"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">50</field>
+        <field name="product_max_qty">250</field>
+        <field name="qty_multiple">50</field>
+    </record>
+    <record id="orderpoint_butter" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_butter"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">10</field>
+        <field name="product_max_qty">40</field>
+        <field name="qty_multiple">1</field>
+    </record>
+    <record id="orderpoint_eggs" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="raw_eggs"/>
+        <field name="warehouse_id" ref="stock.warehouse0"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="product_min_qty">120</field>
+        <field name="product_max_qty">480</field>
+        <field name="qty_multiple">12</field>
+    </record>
+</odoo>

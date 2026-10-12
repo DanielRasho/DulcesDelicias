@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Reports in Odoo are HTML templates written in QWeb (Odoo's template
+    language: t-foreach = loop, t-if = condition, t-esc/t-field = print a
+    value). The same template can be shown in the browser (qweb-html) or
+    converted to PDF (qweb-pdf).
+-->
+<odoo>
+    <record id="action_report_income_statement_html" model="ir.actions.report">
+        <field name="name">Estado de Resultados</field>
+        <field name="model">dd.income.statement.wizard</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">dulces_delicias.report_income_statement</field>
+        <field name="report_file">dulces_delicias.report_income_statement</field>
+    </record>
+
+    <record id="action_report_income_statement_pdf" model="ir.actions.report">
+        <field name="name">Estado de Resultados</field>
+        <field name="model">dd.income.statement.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dulces_delicias.report_income_statement</field>
+        <field name="report_file">dulces_delicias.report_income_statement</field>
+        <field name="print_report_name">'Estado de Resultados %s - %s' % (object.date_from, object.date_to)</field>
+    </record>
+
+    <!-- One row of the statement: an account and its amount -->
+    <template id="income_statement_section">
+        <tr class="table-light">
+            <td colspan="2"><strong t-esc="section['title']"/></td>
+        </tr>
+        <tr t-foreach="section['lines']" t-as="line">
+            <td class="ps-4"><span t-esc="line[0].code"/> <span t-esc="line[0].name"/></td>
+            <td class="text-end" t-esc="line[1]" t-options="{'widget': 'monetary', 'display_currency': wizard.currency_id}"/>
+        </tr>
+        <tr t-if="not section['lines']">
+            <td class="ps-4 text-muted" colspan="2">Sin movimientos en el periodo</td>
+        </tr>
+        <tr>
+            <td class="ps-2"><em>Total <t t-esc="section['title'].lower()"/></em></td>
+            <td class="text-end border-top" t-esc="section['total']" t-options="{'widget': 'monetary', 'display_currency': wizard.currency_id}"/>
+        </tr>
+    </template>
+
+    <!-- A result line (gross profit, operating profit, net profit) -->
+    <template id="income_statement_result">
+        <tr t-attf-class="#{'table-success' if amount >= 0 else 'table-danger'}">
+            <td><strong t-esc="label"/></td>
+            <td class="text-end"><strong t-esc="amount" t-options="{'widget': 'monetary', 'display_currency': wizard.currency_id}"/></td>
+        </tr>
+    </template>
+
+    <template id="report_income_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-set="o" t-value="wizard"/>
+                <t t-set="data" t-value="wizard.get_report_values()"/>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Estado de Resultados</h2>
+                        <p>
+                            <strong t-field="wizard.company_id.name"/><br/>
+                            Del <span t-field="wizard.date_from"/> al <span t-field="wizard.date_to"/>
+                            (expresado en <span t-field="wizard.currency_id.name"/>)
+                        </p>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th>Cuenta</th><th class="text-end">Importe</th></tr>
+                            </thead>
+                            <tbody>
+                                <t t-call="dulces_delicias.income_statement_section">
+                                    <t t-set="section" t-value="data['sections']['income']"/>
+                                </t>
+                                <t t-call="dulces_delicias.income_statement_section">
+                                    <t t-set="section" t-value="data['sections']['cost']"/>
+                                </t>
+                                <t t-call="dulces_delicias.income_statement_result">
+                                    <t t-set="label">UTILIDAD BRUTA</t>
+                                    <t t-set="amount" t-value="data['gross_profit']"/>
+                                </t>
+                                <t t-call="dulces_delicias.income_statement_section">
+                                    <t t-set="section" t-value="data['sections']['expense']"/>
+                                </t>
+                                <t t-call="dulces_delicias.income_statement_result">
+                                    <t t-set="label">UTILIDAD DE OPERACIÓN</t>
+                                    <t t-set="amount" t-value="data['operating_profit']"/>
+                                </t>
+                                <t t-call="dulces_delicias.income_statement_section">
+                                    <t t-set="section" t-value="data['sections']['other_income']"/>
+                                </t>
+                                <t t-call="dulces_delicias.income_statement_result">
+                                    <t t-set="label">UTILIDAD NETA DEL PERIODO</t>
+                                    <t t-set="amount" t-value="data['net_profit']"/>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p class="text-muted small">
+                            Calculado con los asientos contables publicados del periodo
+                            (cuentas de ingresos, costo de ventas y gastos).
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

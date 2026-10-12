@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    After-sales service (Helpdesk, OCA module helpdesk_mgmt).
+    UI: Helpdesk > Configuration > Teams / Categories / Stages
+
+    Every complaint or question is a TICKET. Tickets belong to a TEAM, have a
+    CATEGORY and move through STAGES (New -> In Progress -> Done...).
+-->
+<odoo>
+    <!-- The admin user manages the helpdesk -->
+    <record id="helpdesk_mgmt.group_helpdesk_manager" model="res.groups">
+        <field name="users" eval="[Command.link(ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="helpdesk_team_after_sales" model="helpdesk.ticket.team">
+        <field name="name">Atención Postventa</field>
+        <field name="user_id" ref="base.user_admin"/>
+        <field name="user_ids" eval="[Command.link(ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="helpdesk_category_damaged" model="helpdesk.ticket.category">
+        <field name="name">Producto en mal estado</field>
+    </record>
+    <record id="helpdesk_category_late" model="helpdesk.ticket.category">
+        <field name="name">Retraso en la entrega</field>
+    </record>
+    <record id="helpdesk_category_billing" model="helpdesk.ticket.category">
+        <field name="name">Error en facturación</field>
+    </record>
+    <record id="helpdesk_category_question" model="helpdesk.ticket.category">
+        <field name="name">Consulta general</field>
+    </record>
+
+    <record id="helpdesk_tag_complaint" model="helpdesk.ticket.tag">
+        <field name="name">Reclamo</field>
+    </record>
+    <record id="helpdesk_tag_question" model="helpdesk.ticket.tag">
+        <field name="name">Consulta</field>
+    </record>
+</odoo>

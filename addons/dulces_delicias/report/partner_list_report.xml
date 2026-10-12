@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Printable customer and vendor lists.
+    binding_model_id adds the report to the "Print" menu of the contacts:
+    select contacts in the list view > Print > Listado de Clientes (PDF).
+-->
+<odoo>
+    <record id="action_report_customer_list" model="ir.actions.report">
+        <field name="name">Listado de Clientes (PDF)</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dulces_delicias.report_customer_list</field>
+        <field name="report_file">dulces_delicias.report_customer_list</field>
+        <field name="print_report_name">'Listado de Clientes'</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_vendor_list" model="ir.actions.report">
+        <field name="name">Listado de Proveedores (PDF)</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dulces_delicias.report_vendor_list</field>
+        <field name="report_file">dulces_delicias.report_vendor_list</field>
+        <field name="print_report_name">'Listado de Proveedores'</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_customer_list">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="docs.env.company"/>
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Listado de Clientes</h2>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Contacto</th>
+                                <th>Ciudad</th>
+                                <th>Condición de pago</th>
+                                <th class="text-end">Pedidos</th>
+                                <th class="text-end">Total vendido</th>
+                                <th class="text-end">Por cobrar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="docs" t-as="partner">
+                                <td>
+                                    <strong t-field="partner.name"/><br/>
+                                    <small t-if="partner.dd_preferred_product_ids" class="text-muted">
+                                        Prefiere: <t t-esc="', '.join(partner.dd_preferred_product_ids.mapped('name'))"/>
+                                    </small>
+                                </td>
+                                <td><span t-field="partner.dd_customer_type"/></td>
+                                <td>
+                                    <span t-field="partner.phone"/><br/>
+                                    <small t-field="partner.email"/>
+                                </td>
+                                <td><span t-field="partner.city"/></td>
+                                <td><span t-field="partner.property_payment_term_id"/></td>
+                                <td class="text-end"><span t-field="partner.sale_order_count"/></td>
+                                <td class="text-end"><span t-esc="partner._dd_sold_amount()" t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/></td>
+                                <td class="text-end"><span t-field="partner.credit"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_vendor_list">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="docs.env.company"/>
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Listado de Proveedores</h2>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Proveedor</th>
+                                <th>Contacto</th>
+                                <th>Productos que suministra</th>
+                                <th>Condición de pago</th>
+                                <th class="text-end">Compras</th>
+                                <th class="text-end">Total comprado</th>
+                                <th class="text-end">Por pagar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="docs" t-as="partner">
+                                <td><strong t-field="partner.name"/><br/><small t-field="partner.city"/></td>
+                                <td>
+                                    <span t-field="partner.phone"/><br/>
+                                    <small t-field="partner.email"/>
+                                </td>
+                                <td><t t-esc="', '.join(partner._dd_supplied_products().mapped('name'))"/></td>
+                                <td><span t-field="partner.property_supplier_payment_term_id"/></td>
+                                <td class="text-end"><span t-field="partner.purchase_order_count"/></td>
+                                <td class="text-end"><span t-esc="partner._dd_purchased_amount()" t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/></td>
+                                <td class="text-end"><span t-field="partner.debit"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

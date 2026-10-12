@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    CRM. UI: CRM > Configuration > Sales Teams   |   CRM > Configuration > Pipeline > Tags
+    (stages: the gear icon on each column of the pipeline)
+
+    The pipeline is a kanban board: each column is a STAGE and each card an
+    OPPORTUNITY (a possible deal with a customer). The case study asks for
+    the stages Prospecto -> Negociación -> Cierre, so we replace Odoo's
+    default ones (New, Qualified, Proposition, Won): ours are created here,
+    the default ones are deleted in hooks.py (_remove_default_crm_stages).
+-->
+<odoo>
+    <record id="crm_stage_prospect" model="crm.stage">
+        <field name="name">Prospecto</field>
+        <field name="sequence">1</field>
+        <field name="requirements">Cliente identificado. Presentar catálogo y enviar muestras.</field>
+    </record>
+    <record id="crm_stage_negotiation" model="crm.stage">
+        <field name="name">Negociación</field>
+        <field name="sequence">2</field>
+        <field name="requirements">Cotización enviada. Negociar precios, volúmenes y condiciones de entrega.</field>
+    </record>
+    <!-- is_won: an opportunity in this stage counts as a won deal -->
+    <record id="crm_stage_closed" model="crm.stage">
+        <field name="name">Cierre (Ganado)</field>
+        <field name="sequence">3</field>
+        <field name="is_won" eval="True"/>
+        <field name="fold" eval="False"/>
+        <field name="requirements">Pedido confirmado por el cliente.</field>
+    </record>
+
+    <record id="sales_team.team_sales_department" model="crm.team">
+        <field name="name">Ventas Dulces Delicias</field>
+    </record>
+
+    <record id="crm_tag_recurring" model="crm.tag">
+        <field name="name">Pedido recurrente</field>
+    </record>
+    <record id="crm_tag_volume" model="crm.tag">
+        <field name="name">Volumen</field>
+    </record>
+    <record id="crm_tag_season" model="crm.tag">
+        <field name="name">Temporada</field>
+    </record>
+</odoo>

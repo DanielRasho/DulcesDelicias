@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Manufacturing. UI: Manufacturing > Configuration > Work Centers
+                       Manufacturing > Products > Bills of Materials
+
+    WORK CENTER = a place/machine where work is done. It has
+      costs_hour        cost of one hour of work (labour + machine), added
+                        to the product cost
+      default_capacity  how many units it processes per cycle (a batch)
+      time_start/stop   setup and cleaning minutes
+      expense_account_id  the labour cost is added to the product cost and
+                        owed to the workers (Salary Payable); it becomes
+                        Cost of Goods Sold when the candy is sold
+
+    BILL OF MATERIALS (BoM) = the recipe. For product_qty units of product
+    (here 1 "lote" = 100 units) it lists:
+      bom_line_ids      raw materials (components) and quantities
+      operation_ids     steps, each done in a work center during N minutes.
+                        Each operation becomes a WORK ORDER in production.
+-->
+<odoo>
+    <!-- ===================== WORK CENTERS ===================== -->
+    <record id="workcenter_candy_kitchen" model="mrp.workcenter">
+        <field name="name">Cocina de Caramelos</field>
+        <field name="code">COC</field>
+        <field name="expense_account_id" ref="account.1_salary_payable"/>
+        <field name="costs_hour">25.0</field>
+        <field name="default_capacity">100</field>
+        <field name="time_start">10</field>
+        <field name="time_stop">10</field>
+    </record>
+
+    <record id="workcenter_chocolate_line" model="mrp.workcenter">
+        <field name="name">Línea de Chocolate</field>
+        <field name="code">CHO</field>
+        <field name="expense_account_id" ref="account.1_salary_payable"/>
+        <field name="costs_hour">30.0</field>
+        <field name="default_capacity">100</field>
+        <field name="time_start">15</field>
+        <field name="time_stop">10</field>
+    </record>
+
+    <record id="workcenter_bakery" model="mrp.workcenter">
+        <field name="name">Panadería y Horno</field>
+        <field name="code">HOR</field>
+        <field name="expense_account_id" ref="account.1_salary_payable"/>
+        <field name="costs_hour">28.0</field>
+        <field name="default_capacity">100</field>
+        <field name="time_start">10</field>
+        <field name="time_stop">15</field>
+    </record>
+
+    <record id="workcenter_packaging" model="mrp.workcenter">
+        <field name="name">Empaque</field>
+        <field name="code">EMP</field>
+        <field name="expense_account_id" ref="account.1_salary_payable"/>
+        <field name="costs_hour">15.0</field>
+        <field name="default_capacity">100</field>
+    </record>
+
+    <!-- ===================== BILLS OF MATERIALS ===================== -->
+    <!-- Caramelos: 1 lote = 100 bolsas de 500 g -->
+    <record id="bom_candy" model="mrp.bom">
+        <field name="product_tmpl_id" ref="product_candy_product_template"/>
+        <field name="product_qty">100</field>
+        <field name="product_uom_id" ref="uom.product_uom_unit"/>
+        <field name="code">LOTE-CAR</field>
+        <field name="type">normal</field>
+        <field name="bom_line_ids" eval="[
+            Command.create({'product_id': ref('raw_sugar'), 'product_qty': 45, 'product_uom_id': ref('uom.product_uom_kgm')}),
+            Command.create({'product_id': ref('raw_coloring'), 'product_qty': 0.5, 'product_uom_id': ref('uom.product_uom_litre')}),
+            Command.create({'product_id': ref('raw_flavoring'), 'product_qty': 1, 'product_uom_id': ref('uom.product_uom_litre')}),
+        ]"/>
+        <field name="operation_ids" eval="[
+            Command.create({'sequence': 10, 'name': 'Cocción del jarabe', 'workcenter_id': ref('workcenter_candy_kitchen'), 'time_cycle_manual': 60}),
+            Command.create({'sequence': 20, 'name': 'Moldeado y enfriado', 'workcenter_id': ref('workcenter_candy_kitchen'), 'time_cycle_manual': 45}),
+            Command.create({'sequence': 30, 'name': 'Empaque en bolsas', 'workcenter_id': ref('workcenter_packaging'), 'time_cycle_manual': 30}),
+        ]"/>
+    </record>
+
+    <!-- Chocolates: 1 lote = 100 barras de 100 g -->
+    <record id="bom_chocolate" model="mrp.bom">
+        <field name="product_tmpl_id" ref="product_chocolate_product_template"/>
+        <field name="product_qty">100</field>
+        <field name="product_uom_id" ref="uom.product_uom_unit"/>
+        <field name="code">LOTE-CHO</field>
+        <field name="type">normal</field>
+        <field name="bom_line_ids" eval="[
+            Command.create({'product_id': ref('raw_cocoa'), 'product_qty': 5, 'product_uom_id': ref('uom.product_uom_kgm')}),
+            Command.create({'product_id': ref('raw_milk'), 'product_qty': 4, 'product_uom_id': ref('uom.product_uom_litre')}),
+            Command.create({'product_id': ref('raw_sugar'), 'product_qty': 2, 'product_uom_id': ref('uom.product_uom_kgm')}),
+        ]"/>
+        <field name="operation_ids" eval="[
+            Command.create({'sequence': 10, 'name': 'Mezcla y conchado', 'workcenter_id': ref('workcenter_chocolate_line'), 'time_cycle_manual': 60}),
+            Command.create({'sequence': 20, 'name': 'Templado y moldeado', 'workcenter_id': ref('workcenter_chocolate_line'), 'time_cycle_manual': 40}),
+            Command.create({'sequence': 30, 'name': 'Empaque de barras', 'workcenter_id': ref('workcenter_packaging'), 'time_cycle_manual': 20}),
+        ]"/>
+    </record>
+
+    <!-- Galletas: 1 lote = 100 paquetes de 250 g -->
+    <record id="bom_cookies" model="mrp.bom">
+        <field name="product_tmpl_id" ref="product_cookies_product_template"/>
+        <field name="product_qty">100</field>
+        <field name="product_uom_id" ref="uom.product_uom_unit"/>
+        <field name="code">LOTE-GAL</field>
+        <field name="type">normal</field>
+        <field name="bom_line_ids" eval="[
+            Command.create({'product_id': ref('raw_flour'), 'product_qty': 12, 'product_uom_id': ref('uom.product_uom_kgm')}),
+            Command.create({'product_id': ref('raw_sugar'), 'product_qty': 5, 'product_uom_id': ref('uom.product_uom_kgm')}),
+            Command.create({'product_id': ref('raw_butter'), 'product_qty': 6, 'product_uom_id': ref('uom.product_uom_kgm')}),
+            Command.create({'product_id': ref('raw_eggs'), 'product_qty': 60, 'product_uom_id': ref('uom.product_uom_unit')}),
+        ]"/>
+        <field name="operation_ids" eval="[
+            Command.create({'sequence': 10, 'name': 'Preparación de la masa', 'workcenter_id': ref('workcenter_bakery'), 'time_cycle_manual': 30}),
+            Command.create({'sequence': 20, 'name': 'Horneado', 'workcenter_id': ref('workcenter_bakery'), 'time_cycle_manual': 35}),
+            Command.create({'sequence': 30, 'name': 'Empaque de paquetes', 'workcenter_id': ref('workcenter_packaging'), 'time_cycle_manual': 25}),
+        ]"/>
+    </record>
+</odoo>

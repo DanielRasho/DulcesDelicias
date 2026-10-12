@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Finished products (what we sell). UI: Sales > Products > Products
+
+    route "Manufacture": Odoo replenishes them with manufacturing orders.
+    list_price: sales price (taxes are added on top by the default 15% tax).
+    invoice_policy "order": we can invoice as soon as the order is confirmed.
+    Their cost (standard_price) is computed by Odoo when they are produced.
+-->
+<odoo>
+    <record id="product_candy" model="product.product">
+        <field name="name">Caramelos (bolsa 500 g)</field>
+        <field name="default_code">PT-001</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_finished_goods"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">4.00</field>
+        <field name="purchase_ok" eval="False"/>
+        <field name="invoice_policy">order</field>
+        <field name="weight">0.5</field>
+        <field name="route_ids" eval="[Command.link(ref('mrp.route_warehouse0_manufacture'))]"/>
+        <field name="description_sale">Caramelos artesanales surtidos de frutas.</field>
+    </record>
+
+    <record id="product_chocolate" model="product.product">
+        <field name="name">Chocolates (barra 100 g)</field>
+        <field name="default_code">PT-002</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_finished_goods"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">2.50</field>
+        <field name="purchase_ok" eval="False"/>
+        <field name="invoice_policy">order</field>
+        <field name="weight">0.1</field>
+        <field name="route_ids" eval="[Command.link(ref('mrp.route_warehouse0_manufacture'))]"/>
+        <field name="description_sale">Barra de chocolate con leche.</field>
+    </record>
+
+    <record id="product_cookies" model="product.product">
+        <field name="name">Galletas (paquete 250 g)</field>
+        <field name="default_code">PT-003</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="categ_id" ref="categ_finished_goods"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">3.00</field>
+        <field name="purchase_ok" eval="False"/>
+        <field name="invoice_policy">order</field>
+        <field name="weight">0.25</field>
+        <field name="route_ids" eval="[Command.link(ref('mrp.route_warehouse0_manufacture'))]"/>
+        <field name="description_sale">Galletas de mantequilla horneadas.</field>
+    </record>
+</odoo>

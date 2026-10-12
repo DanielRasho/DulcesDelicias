@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    View INHERITANCE: instead of copying Odoo's contact form, we tell Odoo
+    "find this element (xpath) in the original view and put our fields
+    after it". The original module stays untouched.
+-->
+<odoo>
+    <!-- New tab "Perfil comercial" in the contact form -->
+    <record id="view_partner_form_dulces_delicias" model="ir.ui.view">
+        <field name="name">res.partner.form.dulces.delicias</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales_purchases']" position="before">
+                <page string="Perfil comercial" name="dd_profile" invisible="not is_company">
+                    <group>
+                        <group>
+                            <field name="dd_customer_type"/>
+                            <field name="dd_preferred_product_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <field name="dd_preferences" placeholder="Preferencias de productos, horarios de entrega, forma de pago habitual..."/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Filter / group contacts by customer type in the search bar -->
+    <record id="view_res_partner_filter_dulces_delicias" model="ir.ui.view">
+        <field name="name">res.partner.search.dulces.delicias</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='type_company']" position="after">
+                <separator/>
+                <filter string="Clientes" name="dd_customers" domain="[('customer_rank', '>', 0)]"/>
+                <filter string="Proveedores" name="dd_vendors" domain="[('supplier_rank', '>', 0)]"/>
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter string="Tipo de cliente" name="group_dd_customer_type" context="{'group_by': 'dd_customer_type'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- List of customers (Dulces Delicias > Reportes > Listado de Clientes) -->
+    <record id="view_partner_customer_list" model="ir.ui.view">
+        <field name="name">res.partner.list.customers</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Clientes">
+                <field name="name"/>
+                <field name="dd_customer_type"/>
+                <field name="dd_preferred_product_ids" widget="many2many_tags"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city"/>
+                <field name="property_payment_term_id"/>
+                <field name="sale_order_count" string="Pedidos"/>
+                <field name="credit" string="Por cobrar" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- List of vendors (Dulces Delicias > Reportes > Listado de Proveedores) -->
+    <record id="view_partner_vendor_list" model="ir.ui.view">
+        <field name="name">res.partner.list.vendors</field>
+        <field name="model">res.partner</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Proveedores">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city"/>
+                <field name="property_supplier_payment_term_id"/>
+                <field name="purchase_order_count" string="Compras"/>
+                <field name="debit" string="Por pagar" sum="Total"/>
+            </list>
+        </field>
+    </record>
+</odoo>

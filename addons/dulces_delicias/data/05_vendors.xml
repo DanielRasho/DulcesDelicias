@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Vendors (suppliers). UI: Purchase > Orders > Vendors
+
+    Customers and vendors are both "contacts" (model res.partner).
+    supplier_rank > 0 marks a contact as a vendor.
+-->
+<odoo>
+    <record id="vendor_insumos" model="res.partner">
+        <field name="name">Distribuidora de Insumos Reposteros S.A.</field>
+        <field name="is_company" eval="True"/>
+        <field name="supplier_rank">1</field>
+        <field name="street">Bulevar de los Molinos 456</field>
+        <field name="city">Ciudad Dulce</field>
+        <field name="phone">+1 555 020 0300</field>
+        <field name="email">ventas@insumosreposteros.example</field>
+        <field name="comment">Proveedor principal de azúcar, harina y cacao.</field>
+        <field name="property_supplier_payment_term_id" ref="account.account_payment_term_30days"/>
+    </record>
+
+    <record id="vendor_lacteos" model="res.partner">
+        <field name="name">Lácteos y Granja La Pradera</field>
+        <field name="is_company" eval="True"/>
+        <field name="supplier_rank">1</field>
+        <field name="street">Camino Rural Km 8</field>
+        <field name="city">Valle Verde</field>
+        <field name="phone">+1 555 020 0400</field>
+        <field name="email">pedidos@lapradera.example</field>
+        <field name="comment">Leche, mantequilla y huevos frescos. Entrega diaria.</field>
+        <field name="property_supplier_payment_term_id" ref="account.account_payment_term_15days"/>
+    </record>
+
+    <record id="vendor_aromas" model="res.partner">
+        <field name="name">Aromas y Colores Industriales S.A.</field>
+        <field name="is_company" eval="True"/>
+        <field name="supplier_rank">1</field>
+        <field name="street">Parque Industrial Sur, Bodega 12</field>
+        <field name="city">Ciudad Dulce</field>
+        <field name="phone">+1 555 020 0500</field>
+        <field name="email">info@aromasycolores.example</field>
+        <field name="comment">Colorantes y saborizantes de grado alimenticio.</field>
+        <field name="property_supplier_payment_term_id" ref="account.account_payment_term_30days"/>
+    </record>
+</odoo>

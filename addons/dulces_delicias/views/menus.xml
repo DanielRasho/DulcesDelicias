@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The "Dulces Delicias" app on the home screen, with every report the case
+    study asks for in one place. Most entries simply reuse Odoo's own
+    reports; the menu is just a shortcut to them.
+-->
+<odoo>
+    <!-- ===== Actions (what each menu opens) ===== -->
+    <!-- Stock per location. Quantities are not added up (kg + L + units
+         makes no sense); the stock VALUE is. expand="1" opens the groups. -->
+    <record id="view_stock_quant_inventory_status" model="ir.ui.view">
+        <field name="name">stock.quant.list.inventory.status</field>
+        <field name="model">stock.quant</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Estado de Inventario" expand="1" create="0" edit="0" delete="0">
+                <field name="product_id"/>
+                <field name="product_categ_id" string="Categoría"/>
+                <field name="location_id" column_invisible="1"/>
+                <field name="quantity" string="Cantidad"/>
+                <field name="reserved_quantity" string="Reservado" optional="hide"/>
+                <field name="product_uom_id" string="Unidad"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="value" string="Valor" sum="Valor total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_inventory_status" model="ir.actions.act_window">
+        <field name="name">Estado de Inventario</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'sequence': 1, 'view_mode': 'list', 'view_id': ref('view_stock_quant_inventory_status')}),
+            Command.create({'sequence': 2, 'view_mode': 'pivot', 'view_id': ref('stock.view_stock_quant_pivot')})]"/>
+        <field name="domain">[('location_id.usage', '=', 'internal')]</field>
+        <field name="context">{'group_by': ['location_id']}</field>
+        <field name="help" type="html">
+            <p>Aún no hay existencias. Registra el inventario inicial en Inventory &gt; Operations &gt; Adjustments &gt; Physical Inventory.</p>
+        </field>
+    </record>
+
+    <record id="action_customer_list" model="ir.actions.act_window">
+        <field name="name">Listado de Clientes</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'sequence': 1, 'view_mode': 'list', 'view_id': ref('view_partner_customer_list')}),
+            Command.create({'sequence': 2, 'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+        <field name="domain">[('customer_rank', '>', 0), ('is_company', '=', True)]</field>
+        <field name="context">{'default_customer_rank': 1, 'default_is_company': True}</field>
+    </record>
+
+    <record id="action_vendor_list" model="ir.actions.act_window">
+        <field name="name">Listado de Proveedores</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'sequence': 1, 'view_mode': 'list', 'view_id': ref('view_partner_vendor_list')}),
+            Command.create({'sequence': 2, 'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+        <field name="domain">[('supplier_rank', '>', 0), ('is_company', '=', True)]</field>
+        <field name="context">{'default_supplier_rank': 1, 'default_is_company': True}</field>
+    </record>
+
+    <!-- ===== Menus ===== -->
+    <menuitem id="menu_root" name="Dulces Delicias" sequence="1"
+              web_icon="dulces_delicias,static/description/icon.png"/>
+
+    <menuitem id="menu_reports" name="Reportes" parent="menu_root" sequence="10"/>
+    <menuitem id="menu_report_inventory" name="Estado de Inventario" parent="menu_reports"
+              action="action_inventory_status" sequence="10"/>
+    <menuitem id="menu_report_valuation" name="Valoración de Inventario" parent="menu_reports"
+              action="stock_account.stock_valuation_layer_report_action" sequence="20"/>
+    <menuitem id="menu_report_customers" name="Listado de Clientes" parent="menu_reports"
+              action="action_customer_list" sequence="30"/>
+    <menuitem id="menu_report_vendors" name="Listado de Proveedores" parent="menu_reports"
+              action="action_vendor_list" sequence="40"/>
+    <menuitem id="menu_report_income_statement" name="Estado de Resultados" parent="menu_reports"
+              action="action_income_statement_wizard" sequence="50"/>
+
+    <menuitem id="menu_analysis" name="Análisis" parent="menu_root" sequence="20"/>
+    <menuitem id="menu_analysis_sales" name="Ventas" parent="menu_analysis"
+              action="sale.action_order_report_all" sequence="10"/>
+    <menuitem id="menu_analysis_purchases" name="Compras" parent="menu_analysis"
+              action="purchase.action_purchase_order_report_all" sequence="20"/>
+    <menuitem id="menu_analysis_invoices" name="Facturación" parent="menu_analysis"
+              action="account.action_account_invoice_report_all" sequence="30"/>
+    <menuitem id="menu_analysis_production" name="Producción (órdenes de trabajo)" parent="menu_analysis"
+              action="mrp.mrp_workorder_report" sequence="40"/>
+</odoo>

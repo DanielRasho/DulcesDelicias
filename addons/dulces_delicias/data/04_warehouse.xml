@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Warehouse and locations. UI: Inventory > Configuration > Warehouse Management > Warehouses / Locations
+
+    In Odoo a WAREHOUSE is a physical site, and LOCATIONS are the areas
+    inside it. The case study asks for three "almacenes"; we model them as
+    three locations of the factory warehouse, which is the standard Odoo way:
+
+      DD/Stock/Materias Primas   raw materials, received from vendors
+      DD/Productos en Proceso    work in process: raw materials taken to the
+                                 production floor (created by Odoo for the
+                                 2-step manufacturing, renamed in hooks.py)
+      DD/Stock/Productos Terminados   finished candy, ready to be sold
+
+    Flow:  Vendor -> Materias Primas -> Productos en Proceso -> (production)
+                  -> Productos Terminados -> Customer
+-->
+<odoo>
+    <!-- The warehouse Odoo creates by default, renamed and configured -->
+    <record id="stock.warehouse0" model="stock.warehouse">
+        <field name="name">Planta Dulces Delicias</field>
+        <field name="code">DD</field>
+        <!-- 2 steps: 1) move components to the production floor, 2) manufacture -->
+        <field name="manufacture_steps">pbm</field>
+    </record>
+
+    <record id="location_raw_materials" model="stock.location">
+        <field name="name">Materias Primas</field>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="usage">internal</field>
+    </record>
+
+    <record id="location_finished_goods" model="stock.location">
+        <field name="name">Productos Terminados</field>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="usage">internal</field>
+    </record>
+
+    <!-- Putaway rules: "when a product of category X arrives to Stock, store
+         it in location Y". UI: Inventory > Configuration > Warehouse Management > Putaway Rules -->
+    <record id="putaway_raw_materials" model="stock.putaway.rule">
+        <field name="category_id" ref="categ_raw_materials"/>
+        <field name="location_in_id" ref="stock.stock_location_stock"/>
+        <field name="location_out_id" ref="location_raw_materials"/>
+    </record>
+
+    <record id="putaway_finished_goods" model="stock.putaway.rule">
+        <field name="category_id" ref="categ_finished_goods"/>
+        <field name="location_in_id" ref="stock.stock_location_stock"/>
+        <field name="location_out_id" ref="location_finished_goods"/>
+    </record>
+</odoo>

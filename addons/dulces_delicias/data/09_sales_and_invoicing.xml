@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Sales and invoicing configuration.
+
+    PAYMENT TERMS = WHEN the customer must pay.
+      UI: Invoicing > Configuration > Invoicing > Payment Terms
+      Odoo already has "Immediate Payment", "15 Days", "30 Days"...
+      We add "Pago contra entrega" (cash on delivery).
+
+    PAYMENT METHODS = HOW the customer pays. In Odoo every way of receiving
+    money is a JOURNAL of type bank or cash, with its own account, so the
+    accounting shows how much came in through each method.
+      UI: Invoicing > Configuration > Accounting > Journals
+-->
+<odoo>
+    <record id="payment_term_cash_on_delivery" model="account.payment.term">
+        <field name="name">Pago contra entrega</field>
+        <field name="note">El pago se realiza al momento de recibir la mercadería.</field>
+        <field name="line_ids" eval="[Command.clear(), Command.create({'value': 'percent', 'value_amount': 100, 'nb_days': 0})]"/>
+    </record>
+
+    <record id="journal_bank_transfer" model="account.journal">
+        <field name="name">Transferencia Bancaria</field>
+        <field name="code">TRF</field>
+        <field name="type">bank</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="journal_credit_card" model="account.journal">
+        <field name="name">Tarjeta de Crédito</field>
+        <field name="code">TCR</field>
+        <field name="type">bank</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="journal_cash_on_delivery" model="account.journal">
+        <field name="name">Pago Contra Entrega (Efectivo)</field>
+        <field name="code">PCE</field>
+        <field name="type">cash</field>
+        <field name="sequence">3</field>
+    </record>
+
+    <!-- Expense account for damaged goods we have to throw away (scrap).
+         hooks.py links it to the Scrap location. -->
+    <record id="account_inventory_losses" model="account.account">
+        <field name="code">601000</field>
+        <field name="name">Mermas y Pérdidas de Inventario</field>
+        <field name="account_type">expense</field>
+    </record>
+</odoo>

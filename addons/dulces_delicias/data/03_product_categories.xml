@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Product categories. UI: Inventory > Configuration > Products > Product Categories
+
+    Besides grouping products, a category decides HOW the stock is valued:
+      - Costing method "average" (AVCO): the cost of a product is the
+        weighted average of what we paid / what it cost to produce.
+      - Valuation "real_time" (automated): every stock move creates its
+        accounting entry, so the income statement shows the real
+        Cost of Goods Sold when we sell.
+    "account.1_..." are the accounts of the generic chart of accounts that
+    Odoo created for company number 1 (Invoicing > Configuration > Chart of
+    Accounts).
+-->
+<odoo>
+    <record id="categ_raw_materials" model="product.category">
+        <field name="name">Materias Primas</field>
+        <field name="parent_id" ref="product.product_category_all"/>
+        <field name="property_cost_method">average</field>
+        <field name="property_valuation">real_time</field>
+        <!-- Accounts used by the automatic valuation (balance sheet) -->
+        <field name="property_stock_valuation_account_id" ref="account.1_stock_valuation"/>
+        <field name="property_stock_account_input_categ_id" ref="account.1_stock_in"/>
+        <field name="property_stock_account_output_categ_id" ref="account.1_stock_out"/>
+        <field name="property_stock_journal" ref="account.1_inventory_valuation"/>
+    </record>
+
+    <record id="categ_finished_goods" model="product.category">
+        <field name="name">Productos Terminados</field>
+        <field name="parent_id" ref="product.product_category_all"/>
+        <field name="property_cost_method">average</field>
+        <field name="property_valuation">real_time</field>
+        <!-- Accounts used by the automatic valuation (balance sheet) -->
+        <field name="property_stock_valuation_account_id" ref="account.1_stock_valuation"/>
+        <field name="property_stock_account_input_categ_id" ref="account.1_stock_in"/>
+        <field name="property_stock_account_output_categ_id" ref="account.1_stock_out"/>
+        <field name="property_stock_journal" ref="account.1_inventory_valuation"/>
+        <!-- Sales go to "Product Sales"; the cost of what we sold goes to
+             "Cost of Goods Sold" -->
+        <field name="property_account_income_categ_id" ref="account.1_income"/>
+        <field name="property_account_expense_categ_id" ref="account.1_cost_of_goods_sold"/>
+    </record>
+</odoo>

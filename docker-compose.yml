@@ -1,0 +1,55 @@
+# Dulces Delicias S.A. - Odoo 18 Community demo
+#
+# Three containers:
+#   db      -> PostgreSQL, where Odoo stores ALL its data
+#   odoo    -> the Odoo server (Python) + web interface on http://localhost:8069
+#   mailpit -> a fake mail server: every email Odoo "sends" (invoices, quotes...)
+#              is caught here instead of going to the internet. UI on http://localhost:8025
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  odoo:
+    image: odoo:18.0
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    ports:
+      - "8069:8069"
+    volumes:
+      # Odoo settings (database connection, where to find add-ons, mail server...)
+      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
+      # Our own module for the case study
+      - ./addons:/mnt/extra-addons
+      # Community (OCA) helpdesk modules, downloaded as a git submodule
+      - ./third_party/oca-helpdesk:/mnt/oca-helpdesk:ro
+      # Scripts that simulate the business operations
+      - ./scripts:/mnt/scripts:ro
+      # Attachments, PDFs, images... (the "filestore")
+      - odoo-data:/var/lib/odoo
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "8025:8025"
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  odoo-data:

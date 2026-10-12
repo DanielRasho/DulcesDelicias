@@ -1,0 +1,4 @@
+[submodule "third_party/oca-helpdesk"]
+	path = third_party/oca-helpdesk
+	url = https://github.com/OCA/helpdesk.git
+	branch = 18.0

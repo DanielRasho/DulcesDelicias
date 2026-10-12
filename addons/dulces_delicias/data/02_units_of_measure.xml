@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Units of measure (UoM). UI: Inventory > Configuration > Units of Measures > UoM Categories
+
+    Odoo already ships kg, g, L, Units, Dozens... grouped in categories
+    (Weight, Volume, Unit). Odoo can only convert between units of the SAME
+    category. We add one unit: the 50 kg sack used to BUY sugar and flour,
+    while stock is counted in kg.
+-->
+<odoo>
+    <record id="uom_sack_50kg" model="uom.uom">
+        <field name="name">Saco (50 kg)</field>
+        <field name="category_id" ref="uom.product_uom_categ_kgm"/>
+        <field name="uom_type">bigger</field>
+        <field name="factor_inv">50</field>
+        <field name="rounding">0.01</field>
+    </record>
+</odoo>

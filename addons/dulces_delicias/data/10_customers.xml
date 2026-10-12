@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Customers. UI: Sales > Orders > Customers   (or the Contacts app)
+
+    A company (is_company = True) can have child contacts: people
+    (type "contact") and addresses, e.g. a "delivery" address where the
+    goods must be shipped.
+
+    Fields that start with dd_ are added by this module
+    (models/res_partner.py) and shown in the "Perfil comercial" tab.
+    The purchase history (sales orders, invoices) appears by itself in the
+    smart buttons at the top of the customer form once they buy.
+-->
+<odoo>
+    <!-- ============ 1. Confitería La Dulzura ============ -->
+    <record id="customer_la_dulzura" model="res.partner">
+        <field name="name">Confitería La Dulzura</field>
+        <field name="is_company" eval="True"/>
+        <field name="customer_rank">1</field>
+        <field name="street">Av. Central 45</field>
+        <field name="city">Ciudad Dulce</field>
+        <field name="phone">+1 555 030 0101</field>
+        <field name="email">compras@ladulzura.example</field>
+        <field name="website">https://ladulzura.example</field>
+        <field name="property_payment_term_id" ref="account.account_payment_term_immediate"/>
+        <field name="dd_customer_type">retail</field>
+        <field name="dd_preferred_product_ids" eval="[Command.set([ref('product_candy'), ref('product_chocolate')])]"/>
+        <field name="dd_preferences">Tienda de dulces del centro. Prefiere caramelos de frutas y chocolate con leche. Hace pedidos pequeños y frecuentes; paga con tarjeta de crédito.</field>
+    </record>
+    <record id="contact_la_dulzura" model="res.partner">
+        <field name="name">Lucía Fernández</field>
+        <field name="parent_id" ref="customer_la_dulzura"/>
+        <field name="type">contact</field>
+        <field name="function">Propietaria</field>
+        <field name="email">lucia@ladulzura.example</field>
+        <field name="mobile">+1 555 030 0102</field>
+    </record>
+
+    <!-- ============ 2. Supermercado Delicias ============ -->
+    <record id="customer_supermercado" model="res.partner">
+        <field name="name">Supermercado Delicias</field>
+        <field name="is_company" eval="True"/>
+        <field name="customer_rank">1</field>
+        <field name="street">Av. Comercio 1200</field>
+        <field name="city">Ciudad Dulce</field>
+        <field name="phone">+1 555 030 0201</field>
+        <field name="email">proveedores@superdelicias.example</field>
+        <field name="website">https://superdelicias.example</field>
+        <field name="property_payment_term_id" ref="account.account_payment_term_30days"/>
+        <field name="dd_customer_type">supermarket</field>
+        <field name="dd_preferred_product_ids" eval="[Command.set([ref('product_cookies'), ref('product_chocolate')])]"/>
+        <field name="dd_preferences">Cadena de 5 supermercados. Compra por volumen para góndolas, sobre todo galletas. Exige entregas completas (no parciales) en su bodega central. Paga por transferencia a 30 días.</field>
+    </record>
+    <record id="contact_supermercado" model="res.partner">
+        <field name="name">Carlos Méndez</field>
+        <field name="parent_id" ref="customer_supermercado"/>
+        <field name="type">contact</field>
+        <field name="function">Jefe de Compras</field>
+        <field name="email">carlos.mendez@superdelicias.example</field>
+        <field name="mobile">+1 555 030 0202</field>
+    </record>
+    <record id="delivery_supermercado" model="res.partner">
+        <field name="name">Bodega Central</field>
+        <field name="parent_id" ref="customer_supermercado"/>
+        <field name="type">delivery</field>
+        <field name="street">Carretera Norte Km 12</field>
+        <field name="city">Ciudad Dulce</field>
+        <field name="phone">+1 555 030 0203</field>
+        <field name="comment">Recepción de mercadería: lunes a viernes de 7:00 a 13:00.</field>
+    </record>
+
+    <!-- ============ 3. Distribuidora Dulce Sabor ============ -->
+    <record id="customer_distribuidora" model="res.partner">
+        <field name="name">Distribuidora Dulce Sabor</field>
+        <field name="is_company" eval="True"/>
+        <field name="customer_rank">1</field>
+        <field name="street">Calle del Puerto 77</field>
+        <field name="city">Puerto Azúcar</field>
+        <field name="phone">+1 555 030 0301</field>
+        <field name="email">ventas@dulcesabor.example</field>
+        <field name="property_payment_term_id" ref="payment_term_cash_on_delivery"/>
+        <field name="dd_customer_type">distributor</field>
+        <field name="dd_preferred_product_ids" eval="[Command.set([ref('product_candy'), ref('product_chocolate'), ref('product_cookies')])]"/>
+        <field name="dd_preferences">Distribuye a tiendas de barrio de la región costera. Compra de todo un poco y busca precios por volumen. Paga en efectivo al recibir (contra entrega).</field>
+    </record>
+    <record id="contact_distribuidora" model="res.partner">
+        <field name="name">Ana Ruiz</field>
+        <field name="parent_id" ref="customer_distribuidora"/>
+        <field name="type">contact</field>
+        <field name="function">Gerente Comercial</field>
+        <field name="email">ana.ruiz@dulcesabor.example</field>
+        <field name="mobile">+1 555 030 0302</field>
+    </record>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    XML data files create or update records ("rows") in Odoo's database.
+      <record id="..." model="...">  one record of a model (table)
+      <field name="...">             one value (column) of that record
+      ref="module.xml_id"            points to another record by its XML ID
+    An id without a module prefix belongs to this module (dulces_delicias).
+    An id like "base.main_company" UPDATES a record created by another module.
+-->
+<odoo>
+    <!-- The company. UI: Settings > Companies -->
+    <record id="base.main_company" model="res.company">
+        <field name="name">Dulces Delicias S.A.</field>
+        <field name="street">Calle del Azúcar 123</field>
+        <field name="street2">Zona Industrial Norte</field>
+        <field name="city">Ciudad Dulce</field>
+        <field name="phone">+1 555 010 0100</field>
+        <field name="email">ventas@dulcesdelicias.example</field>
+        <field name="website">https://dulcesdelicias.example</field>
+        <field name="report_header">Caramelos, chocolates y galletas artesanales</field>
+        <!-- Logo shown on quotations, invoices and every printed report -->
+        <field name="logo" type="base64" file="dulces_delicias/static/description/icon.png"/>
+        <!-- Document layout (Settings > Companies > Configure Document Layout) -->
+        <field name="external_report_layout_id" ref="web.external_layout_standard"/>
+        <field name="primary_color">#d6336c</field>
+        <field name="secondary_color">#7a2948</field>
+    </record>
+
+    <!-- The administrator user (login: admin / password: admin) -->
+    <record id="base.partner_admin" model="res.partner">
+        <field name="email">admin@dulcesdelicias.example</field>
+    </record>
+    <!-- Show the accounting menus (journal entries, journal items, chart of
+         accounts): Invoicing > Accounting -->
+    <record id="base.user_admin" model="res.users">
+        <field name="groups_id" eval="[Command.link(ref('account.group_account_user'))]"/>
+    </record>
+</odoo>
